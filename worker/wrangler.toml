@@ -1,0 +1,50 @@
+# One helper per CLINIC (Pro). Change name, vars and the KV id for each client.
+name = "sample-clinic-helper"
+main = "worker.js"
+compatibility_date = "2026-11-01"
+workers_dev = true
+keep_vars = true          # a deploy never removes values added in the Cloudflare dashboard
+
+[triggers]
+crons = ["*/15 * * * *"]   # WhatsApp reminders (24 h + 1 h) and review requests
+
+[vars]
+CLINIC_NAME = "Sample Clinic"
+CLINIC_WHATSAPP = "919000000000"        # clinic's own WhatsApp, shown to patients for questions
+DESK_WHATSAPP = "971586576586"          # front desk gets "new booking" WhatsApp alerts ("" = none)
+REVIEW_URL = ""                         # clinic's Google review link ("" = no review requests)
+SITE_URL = "https://drmirshadck.github.io/doctor-site-template-pro"
+ALLOWED_ORIGINS = "https://drmirshadck.github.io"
+VAPID_SUBJECT = "mailto:support@arshees.com"
+WA_ENABLED = "1"
+WA_LANG = "en"
+WA_PHONE_ID = "1442684148932294"        # DotCom WhatsApp sender (Meta test number for now)
+# OWN CALENDAR (no Cal.com): "own". Leave out or "cal" = Cal.com as before.
+CALENDAR = "cal"            # TEMPLATE DEMO helper only. For EVERY client site set CALENDAR = "own" (DotCom's own calendar).
+TIMEZONE = "Asia/Kolkata"
+RETAIN_DAYS = "365"          # bookings are deleted this many days after the appointment
+CHANGE_CUTOFF_HOURS = "2"    # patients can cancel / change time online until this many hours before
+# Starting timetable for every doctor (each doctor, or the desk, changes it later in the dashboard). Type slugs = calSlug in config.js.
+# A doctor can have their own: "schedule" in their DOCTORS_JSON entry.
+SCHEDULE_JSON = '''{"week":{"1":[["10:00","13:00"],["17:00","20:00"]],"2":[["10:00","13:00"],["17:00","20:00"]],"3":[["10:00","13:00"],["17:00","20:00"]],"4":[["10:00","13:00"],["17:00","20:00"]],"5":[["10:00","13:00"],["17:00","20:00"]],"6":[["10:00","13:00"]],"0":[]},"gap":10,"notice":3,"ahead":30,"types":{"online-video-consultation":{"name":"New consultation","length":30,"confirm":true},"review-consultation":{"name":"Review consultation","length":20,"confirm":true},"clinic-visit":{"name":"Clinic visit","length":15,"confirm":true}}}'''
+# Emails (patient + doctor) via Zoho ZeptoMail, sender name = CLINIC_NAME, secret ZEPTO_TOKEN
+EMAIL_PROVIDER = "zeptomail"
+EMAIL_FROM = "yourbooking@arshees.com"
+ZEPTO_HOST = "cpaas.zoho.com"
+# One entry per doctor. types: calSlug -> name, fee, kind (new/review). whatsapp: doctor's alerts number. email: doctor's own email (booking emails).
+DOCTORS_JSON = '''[{"id":"sample","name":"Dr. Sample Name","whatsapp":"971586576586","email":"","roomUrl":"","types":{"online-video-consultation":{"name":"New consultation","fee":500,"kind":"new"},"review-consultation":{"name":"Review consultation","fee":300,"kind":"review"},"clinic-visit":{"name":"Clinic visit","fee":0,"kind":"new"}}}]'''
+
+[[durable_objects.bindings]]
+name = "CALS"
+class_name = "Calendar"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Calendar"]
+
+[[kv_namespaces]]
+binding = "PUSH"
+id = "beace5d17df743ffa80245a518677060"
+
+# Secrets (never in this file): CAL_KEYS, DAILY_KEYS, PINS, SESSION_SECRET, CAL_WEBHOOK_SECRET,
+# VAPID_PUBLIC_KEY, VAPID_PRIVATE_JWK, WA_TOKEN, and for the own calendar DATA_KEY + ZEPTO_TOKEN (no CAL_KEYS needed)   ->  node make-secrets.mjs sample=1234 desk=5678

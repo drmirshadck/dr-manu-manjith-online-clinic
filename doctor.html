@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Clinic dashboard</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<script>document.write('<script src="config.js?v=' + Date.now() + '"><\/script>')</script><!-- always the newest settings -->
+<!-- DotCom Pro: doctor / front-desk page. Details from config.js; every key stays in the Cloudflare helper. -->
+<style>
+  :root{--brand:#0e8a8a;--deep:#074a50;--accent:#d94a3d;--light:#9fe3dc;--bg:#f3f7f8;--card:#fff;--fg:#1d3239;--muted:#5d727a;--line:#e1eaec;--ok:#1e8e3e}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Nunito Sans",system-ui,sans-serif;background:var(--bg);color:var(--fg);min-height:100dvh;padding-bottom:env(safe-area-inset-bottom)}
+  button,input,select{font:inherit}button{cursor:pointer}
+  header{background:var(--deep);color:#fff;padding:calc(14px + env(safe-area-inset-top)) 18px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:5}
+  header b{font:700 17px Outfit}header small{display:block;opacity:.75;font-size:12.5px}
+  .hbtn{background:rgba(255,255,255,.14);color:#fff;border:0;border-radius:999px;padding:8px 14px;font-weight:700;font-size:13.5px}
+  main{max-width:820px;margin:0 auto;padding:16px}
+  .login{max-width:360px;margin:12vh auto 0;background:var(--card);border-radius:22px;padding:28px;text-align:center;box-shadow:0 20px 50px -30px rgba(0,0,0,.35)}
+  .login img{width:84px;height:84px;border-radius:50%;object-fit:cover;object-position:center 20%;margin-bottom:12px}
+  .login h1{font:700 22px Outfit;color:var(--deep)}
+  .login p{color:var(--muted);margin:6px 0 18px}
+  .pin{width:100%;font:700 26px Outfit;letter-spacing:.4em;text-align:center;padding:14px;border:1.5px solid var(--line);border-radius:14px;margin-bottom:14px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:999px;padding:11px 18px;font-weight:700;font-size:14.5px;background:var(--brand);color:#fff;text-decoration:none}
+  .btn.full{width:100%}.btn.ghost{background:transparent;color:var(--deep);border:1.5px solid var(--line)}
+  .btn.ok{background:var(--ok)}.btn.no{background:#fff;color:#b3261e;border:1.5px solid #f1c9c6}.btn.wa{background:#25d366}
+  .btn.sm{padding:8px 12px;font-size:13px}
+  .btn:disabled{opacity:.55;cursor:wait}
+  .err{color:#b3261e;min-height:1.3em;margin-top:10px;font-size:14px}
+  .tabs{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 14px}
+  .tab{flex:1 1 auto;min-width:max-content;border:1.5px solid var(--line);background:var(--card);border-radius:14px;padding:11px 12px;font-weight:700;color:var(--muted)}
+  .tab[aria-selected=true]{background:var(--deep);color:#fff;border-color:var(--deep)}
+  .tab .n{display:inline-grid;place-items:center;min-width:20px;height:20px;border-radius:10px;background:var(--accent);color:#fff;font-size:11.5px;margin-left:6px;padding:0 6px}
+  .tab[aria-selected=true] .n{background:#fff;color:var(--deep)}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+  .chip{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:6px 12px;font-weight:700;font-size:13px;color:var(--muted)}
+  .chip[aria-pressed=true]{background:var(--brand);border-color:var(--brand);color:#fff}
+  .card{background:var(--card);border-radius:18px;padding:16px;margin-bottom:12px;border:1px solid var(--line)}
+  .card .top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+  .card h3{font:700 17px Outfit;color:var(--deep)}
+  .when{font-weight:700;text-align:right;white-space:nowrap}.when small{display:block;font-weight:600;color:var(--muted)}
+  .meta{color:var(--muted);font-size:14px;margin-top:6px;display:grid;gap:3px}
+  .meta a{color:var(--brand);font-weight:700;text-decoration:none}
+  .tag{display:inline-block;background:#eef8f1;color:var(--ok);font-weight:700;border-radius:8px;padding:2px 8px;font-size:12.5px}
+  .tag.doc{background:#eef4f8;color:var(--deep)}
+  .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.acts .btn{flex:1;min-width:110px}
+  .empty{text-align:center;color:var(--muted);padding:40px 10px}
+  .note{font-size:13px;color:var(--muted)}
+  .notify{background:#fff8e6;border:1px solid #f3dfa8;border-radius:14px;padding:12px 14px;display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px;font-size:14px}
+  .today{border-left:4px solid var(--accent)}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:12px}
+  .panel h3{font:700 18px Outfit;color:var(--deep);margin-bottom:10px}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
+  .row label{display:grid;gap:4px;font-size:13px;font-weight:700;color:var(--muted);flex:1;min-width:140px}
+  .row input,.row select{padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;background:#fff}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:12px 0}
+  .stat{background:var(--bg);border-radius:14px;padding:12px}.stat b{display:block;font:700 22px Outfit;color:var(--deep)}.stat span{font-size:12.5px;color:var(--muted)}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}td,th{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--muted);font-size:12.5px}
+  .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--deep);color:#fff;padding:12px 16px;border-radius:16px;font-weight:700;box-shadow:0 10px 30px -10px rgba(0,0,0,.4);display:none;align-items:center;gap:10px;max-width:calc(100% - 32px);z-index:20}
+  .toast.on{display:flex}
+  dialog{border:0;border-radius:20px;padding:22px;max-width:400px;width:calc(100% - 32px)}
+  dialog::backdrop{background:rgba(0,0,0,.4)}
+  dialog h3{font:700 19px Outfit;color:var(--deep);margin-bottom:8px}
+  dialog textarea{width:100%;min-height:80px;border:1.5px solid var(--line);border-radius:12px;padding:10px;margin:10px 0}
+  .tt h3{font:700 16px Outfit,system-ui,sans-serif;color:var(--deep);margin:4px 0 10px}
+  .dayrow{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;align-items:start;padding:10px 0;border-top:1px solid var(--line)}
+  .dayrow:first-of-type{border-top:0}
+  .dayrow b{font-size:14px}
+  .wins{display:grid;gap:6px}
+  .win{display:flex;gap:6px;align-items:center;flex-wrap:nowrap}
+  .win input[type=time]{flex:1 1 0;min-width:0;width:auto;font-size:14px;padding:7px 4px}
+  .win span{flex:none;font-size:13px;color:var(--muted)}
+  .win .x{flex:none}
+  .win input[type=time],.tt input[type=date],.tt input[type=number],.tt input[type=text]{font:inherit;border:1.5px solid var(--line);border-radius:10px;padding:7px 8px;background:#fff}
+  .tt input[type=number]{width:80px}
+  .x{border:0;background:#fdeceb;color:#b3261e;border-radius:10px;padding:7px 10px;font-weight:700}
+  .add{border:1.5px dashed var(--line);background:#fff;color:var(--deep);border-radius:10px;padding:6px 10px;font-weight:700;justify-self:start}
+  .closed{color:var(--muted);font-size:14px;padding-top:8px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .grid2 label{font-size:13.5px;color:var(--muted);display:grid;gap:4px}
+  .leave{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:8px 0;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<header><div><b id="dn"></b><small id="who">Clinic dashboard</small></div><div id="hdrBtns" hidden><button class="hbtn" id="refresh">Refresh</button> <button class="hbtn" id="logout">Log out</button></div></header>
+<main id="main"></main>
+<dialog id="dlg"></dialog>
+<div class="toast" id="toast"><span id="toastMsg"></span></div>
+<script src="jspdf.min.js"></script>
+<script>
+(function(){
+const S = window.SITE, DOCS = S.doctors || [], CL = S.clinic || {};
+const API = ((S.helper && S.helper.url) || "").replace(/\/$/, "");
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
+const r = document.documentElement.style;
+r.setProperty("--brand", S.theme.brand); r.setProperty("--deep", S.theme.brandDeep); r.setProperty("--accent", S.theme.accent); r.setProperty("--light", S.theme.light);
+$("dn").textContent = CL.name || S.doctor.name; document.title = "Dashboard · " + (CL.name || S.doctor.name);
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+const params = new URLSearchParams(location.search);
+
+const store = {
+  get() { try { return JSON.parse(localStorage.getItem("docSession") || "null"); } catch (e) { return null; } },
+  set(v) { try { v ? localStorage.setItem("docSession", JSON.stringify(v)) : localStorage.removeItem("docSession"); localStorage.setItem("docToken", v ? v.token : ""); } catch (e) {} }
+};
+let sess = store.get(), data = { pending: [], upcoming: [], past: [] }, tab = "pending", filter = "all", timer = null;
+const isDesk = () => sess && sess.role === "desk";
+
+function toast(t, waLink) {
+  const el = $("toast"); $("toastMsg").textContent = t;
+  const old = el.querySelector("a"); if (old) old.remove();
+  if (waLink) { const a = document.createElement("a"); a.className = "btn wa sm"; a.href = waLink; a.target = "_blank"; a.rel = "noopener"; a.textContent = "Send on WhatsApp"; el.appendChild(a); }
+  el.classList.add("on"); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove("on"), waLink ? 12000 : 2800);
+}
+const waUrl = (to, text) => `https://wa.me/${String(to).replace(/\D/g, "")}?text=${encodeURIComponent(text)}`;
+function reportWa(okMsg, wa) {   // automatic WhatsApp, or "tap to send" backup
+  if (!wa || wa.sent) return toast(okMsg + (wa && wa.sent ? " WhatsApp sent." : ""));
+  if (wa.to && wa.text) return toast(okMsg + " WhatsApp didn't send automatically.", waUrl(wa.to, wa.text));
+  toast(okMsg + " (No WhatsApp number on this booking.)");
+}
+async function api(path, opts = {}) {
+  if (!API) throw new Error("The dashboard is not connected yet (helper URL missing in config.js).");
+  const res = await fetch(API + path, { ...opts, headers: { "Content-Type": "application/json", ...(sess ? { Authorization: "Bearer " + sess.token } : {}) } });
+  const d = await res.json().catch(() => ({}));
+  if (res.status === 401 && path !== "/login") { logout(); throw new Error("Please log in again."); }
+  if (!res.ok) throw new Error(d.error || "Something went wrong.");
+  return d;
+}
+const post = (p, b) => api(p, { method: "POST", body: JSON.stringify(b || {}) });
+
+/* ---------- login ---------- */
+function showLogin(msg) {
+  $("hdrBtns").hidden = true; $("who").textContent = "Clinic dashboard";
+  $("main").innerHTML = `<form class="login" id="lf"><img src="${esc(S.doctor.photo)}" alt=""><h1>${esc(CL.name || S.doctor.name)}</h1><p>Enter your PIN.</p>
+    <input class="pin" id="pin" type="password" inputmode="numeric" autocomplete="current-password" maxlength="8" aria-label="PIN" required>
+    <button class="btn full" id="lb">Open dashboard</button><p class="err" id="le">${esc(msg || "")}</p></form>`;
+  $("pin").focus();
+  $("lf").onsubmit = async e => {
+    e.preventDefault(); const b = $("lb"); b.disabled = true; $("le").textContent = "";
+    try { const d = await api("/login", { method: "POST", body: JSON.stringify({ pin: $("pin").value.trim() }) }); sess = d; store.set(sess); afterLogin(); }
+    catch (er) { $("le").textContent = er.message; b.disabled = false; $("pin").select(); }
+  };
+}
+function logout() { sess = null; store.set(null); clearInterval(timer); showLogin(); }
+$("logout").onclick = logout;
+$("refresh").onclick = () => load(true);
+function afterLogin() { if (params.get("next") === "room") return openRoom(params.get("d") || (isDesk() ? DOCS[0].id : sess.role)); start(); }
+
+/* ---------- helpers ---------- */
+const TZ = "Asia/Kolkata";
+const day = d => new Date(d).toLocaleDateString("en-IN", { timeZone: TZ, weekday: "short", day: "numeric", month: "short" });
+const time = d => new Date(d).toLocaleTimeString("en-IN", { timeZone: TZ, hour: "numeric", minute: "2-digit" });
+const isToday = d => day(d) === day(Date.now());
+const upiRef = n => (String(n).match(/UPI ref:\s*(\d{12})/i) || [])[1] || "";
+const phoneDigits = p => String(p).replace(/\D/g, "");
+const siteBase = () => location.origin + location.pathname.replace(/doctor\.html$/, "");
+const joinLink = docId => `${siteBase()}consult.html?d=${encodeURIComponent(docId)}`;
+
+function start() {
+  $("hdrBtns").hidden = false; $("who").textContent = isDesk() ? "Front desk" : (sess.name || "Doctor");
+  load(); clearInterval(timer); timer = setInterval(() => document.visibilityState === "visible" && ["pending", "upcoming", "past"].includes(tab) && load(), 60000);
+}
+async function load(manual) {
+  try { data = await api("/bookings"); render(); if (manual) toast("Up to date"); }
+  catch (e) { if (sess) $("main").innerHTML = `<div class="empty">${esc(e.message)}<br><br><button class="btn" onclick="location.reload()">Try again</button></div>`; }
+}
+const byFilter = l => filter === "all" ? l : l.filter(b => b.doctor === filter);
+
+function render() {
+  const P = byFilter(data.pending), U = byFilter(data.upcoming), D = byFilter(data.past);
+  const canNotify = "Notification" in window && "serviceWorker" in navigator && "PushManager" in window;
+  const notifyBox = canNotify && Notification.permission !== "granted"
+    ? `<div class="notify"><span>Get a notification on this phone when a patient books.</span><button class="btn sm" id="nb">Turn on</button></div>`
+    : (!canNotify && /iphone|ipad/i.test(navigator.userAgent) ? `<div class="notify"><span>On iPhone, add this page to your Home Screen (Share → Add to Home Screen) to get booking notifications.</span></div>` : "");
+  const chips = isDesk() && sess.doctors.length > 1 ? `<div class="chips">${[{ id: "all", name: "All doctors" }].concat(sess.doctors).map(d => `<button class="chip" data-f="${esc(d.id)}" aria-pressed="${filter === d.id}">${esc(d.name)}</button>`).join("")}</div>` : "";
+  const T = (id, label, n) => `<button class="tab" role="tab" data-t="${id}" aria-selected="${tab === id}">${label}${n ? `<span class="n">${n}</span>` : ""}</button>`;
+  let body = "";
+  if (tab === "pending") body = P.length ? P.map(card).join("") : `<div class="empty">No new requests. You'll be notified when a patient books.</div>`;
+  if (tab === "upcoming") body = U.length ? U.map(card).join("") : `<div class="empty">No upcoming consultations.</div>`;
+  if (tab === "past") body = D.length ? D.map(card).join("") : `<div class="empty">No consultations in the last 7 days.</div>`;
+  if (tab === "leave") body = leaveView();
+  if (tab === "timetable") body = `${isDesk() ? `<div class="row" style="margin-bottom:10px"><label>Doctor<select id="ttDoc">${sess.doctors.map(x => `<option value="${esc(x.id)}" ${ttDoc() === x.id ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select></label></div>` : ""}<div id="tt" class="tt"><div class="empty">Loading timetable…</div></div>`;
+  if (tab === "report") body = reportView();
+  $("main").innerHTML = `${notifyBox}${chips}<div class="tabs" role="tablist">${T("pending", "Requests", P.length)}${T("upcoming", "Upcoming", U.length)}${T("past", "Done", 0)}${data.own ? T("timetable", "Timetable", 0) : T("leave", "Leave", 0)}${T("report", "Report", 0)}</div>${body}
+    <p class="note" style="text-align:center;margin-top:10px">Times are in India time (IST).</p>`;
+  document.querySelectorAll("[data-t]").forEach(b => b.onclick = () => { tab = b.dataset.t; render(); if (tab === "leave") loadLeave(); });
+  document.querySelectorAll("[data-f]").forEach(b => b.onclick = () => { filter = b.dataset.f; render(); });
+  document.querySelectorAll("[data-ok]").forEach(b => b.onclick = () => confirmB(b));
+  document.querySelectorAll("[data-no]").forEach(b => b.onclick = () => declineB(b.dataset.no, b.dataset.doc));
+  document.querySelectorAll("[data-call]").forEach(b => b.onclick = () => openRoom(b.dataset.call));
+  document.querySelectorAll("[data-fu]").forEach(b => b.onclick = () => followB(b.dataset.fu, b.dataset.doc));
+  document.querySelectorAll("[data-ns]").forEach(b => b.onclick = () => noShowB(b));
+  if ($("nb")) $("nb").onclick = enablePush;
+  if (tab === "leave") wireLeave();
+  if (tab === "timetable") { if ($("ttDoc")) $("ttDoc").onchange = e => { tt.doc = e.target.value; tt.s = null; loadTT(); }; loadTT(); }
+  document.querySelectorAll("[data-cx]").forEach(b => b.onclick = () => declineB(b.dataset.cx, b.dataset.doc, true));
+  if (tab === "report") wireReport();
+}
+function card(b) {
+  const ref = upiRef(b.notes), ph = phoneDigits(b.phone);
+  const other = b.notes.replace(/UPI ref:\s*\d{12}\s*(\(₹?\d+\))?/i, "").trim();
+  const msg = `Hello ${b.name}, your consultation with ${b.doctorName} is confirmed for ${day(b.start)} at ${time(b.start)} IST. Join here at that time: ${joinLink(b.doctor)}`;
+  const acts = tab === "pending"
+    ? `<button class="btn no" data-no="${esc(b.uid)}" data-doc="${esc(b.doctor)}">Decline</button><button class="btn ok" data-ok="${esc(b.uid)}" data-doc="${esc(b.doctor)}" data-name="${esc(b.name)}">Confirm</button>`
+    : tab === "upcoming"
+      ? `${ph ? `<a class="btn wa" href="${waUrl(ph, msg)}" target="_blank" rel="noopener">Send link</a>` : ""}${!isDesk() || true ? `<button class="btn" data-call="${esc(b.doctor)}">Start call</button>` : ""}${data.own ? `<button class="btn no" data-cx="${esc(b.uid)}" data-doc="${esc(b.doctor)}">Cancel</button>` : ""}`
+      : `<button class="btn ghost" data-ns="${esc(b.uid)}" data-doc="${esc(b.doctor)}" ${b.absent ? "disabled" : ""}>${b.absent ? "Marked no-show" : "Patient didn't join"}</button><button class="btn" data-fu="${esc(b.uid)}" data-doc="${esc(b.doctor)}">Follow-up</button>`;
+  return `<div class="card${tab === "upcoming" && isToday(b.start) ? " today" : ""}">
+    <div class="top"><div><h3>${esc(b.name)}</h3><div class="meta"><span>${esc(b.title)}</span>${isDesk() ? `<span><span class="tag doc">${esc(b.doctorName)}</span></span>` : ""}</div></div>
+      <div class="when">${isToday(b.start) ? "Today" : esc(day(b.start))}<small>${esc(time(b.start))}</small></div></div>
+    <div class="meta">
+      ${ph ? `<span>WhatsApp: <a href="https://wa.me/${ph}" target="_blank" rel="noopener">${esc(b.phone)}</a></span>` : ""}
+      ${ref ? `<span>Paid by UPI · <span class="tag">Ref ${esc(ref)}</span></span>` : (tab === "pending" ? `<span>No UPI reference entered. Check your UPI app.</span>` : "")}
+      ${other ? `<span>Note: ${esc(other)}</span>` : ""}
+    </div>
+    <div class="acts">${acts}</div></div>`;
+}
+async function confirmB(btn) {
+  btn.disabled = true;
+  try { const d = await post("/confirm", { uid: btn.dataset.ok, doctor: btn.dataset.doc }); reportWa(`Confirmed. ${btn.dataset.name} gets an email.`, d.wa); await load(); }
+  catch (e) { toast(e.message); btn.disabled = false; }
+}
+function dialog(html, wire) { const d = $("dlg"); d.innerHTML = html; d.showModal(); wire(d); }
+function declineB(uid, doc, cancel) {
+  dialog(`<h3>${cancel ? "Cancel this consultation?" : "Decline this booking?"}</h3><p class="note">The patient gets an email and a WhatsApp. If they already paid, refund them by UPI.</p><textarea id="reason">The doctor is not available at this time. Please book another slot.</textarea><div class="acts"><button class="btn ghost" id="dNo">Keep it</button><button class="btn no" id="dYes">${cancel ? "Cancel consultation" : "Decline"}</button></div>`, d => {
+    $("dNo").onclick = () => d.close();
+    $("dYes").onclick = async () => {
+      $("dYes").disabled = true;
+      try { const x = await post(cancel ? "/cancel-booking" : "/decline", { uid, doctor: doc, reason: $("reason").value }); d.close(); reportWa(cancel ? "Cancelled." : "Declined.", x.wa); await load(); }
+      catch (e) { toast(e.message); $("dYes").disabled = false; }
+    };
+  });
+}
+function followB(uid, doc) {
+  dialog(`<h3>Follow-up</h3><p class="note">The patient gets a WhatsApp now asking them to book their review around that time, with the booking link.</p>
+    <div class="row" style="margin:14px 0"><label>Review in<select id="wk"><option value="1">1 week</option><option value="2" selected>2 weeks</option><option value="4">4 weeks</option><option value="6">6 weeks</option><option value="8">8 weeks</option><option value="12">3 months</option></select></label></div>
+    <div class="acts"><button class="btn ghost" id="fNo">Cancel</button><button class="btn" id="fYes">Send</button></div>`, d => {
+    $("fNo").onclick = () => d.close();
+    $("fYes").onclick = async () => {
+      $("fYes").disabled = true;
+      try { const x = await post("/followup", { uid, doctor: doc, weeks: $("wk").value }); d.close(); reportWa("Follow-up sent.", x.wa); }
+      catch (e) { toast(e.message); $("fYes").disabled = false; }
+    };
+  });
+}
+async function noShowB(btn) {
+  btn.disabled = true;
+  try { await post("/noshow", { uid: btn.dataset.ns, doctor: btn.dataset.doc }); toast("Marked as no-show."); await load(); }
+  catch (e) { toast(e.message); btn.disabled = false; }
+}
+async function openRoom(docId) {
+  $("main").innerHTML = `<div class="empty">Opening the consultation room…</div>`;
+  try { const d = await post("/host-token", { doctor: docId }); location.href = `consult.html?d=${encodeURIComponent(docId)}&host=${encodeURIComponent(d.token)}`; }
+  catch (e) { $("main").innerHTML = `<div class="empty">${esc(e.message)}<br><br><button class="btn" onclick="location.href='doctor.html'">Back</button></div>`; }
+}
+
+/* ---------- timetable (own calendar) ---------- */
+const DAYS = [["1","Mon"],["2","Tue"],["3","Wed"],["4","Thu"],["5","Fri"],["6","Sat"],["0","Sun"]];
+const tt = { doc: "", s: null };
+const ttDoc = () => isDesk() ? (tt.doc || (filter !== "all" ? filter : sess.doctors[0].id)) : sess.role;
+async function loadTT() {
+  try { if (!tt.s) tt.s = (await api("/schedule?doctor=" + encodeURIComponent(ttDoc()))).schedule; if ($("tt")) drawTT(); }
+  catch (e) { $("tt").innerHTML = `<div class="empty">${esc(e.message)}</div>`; }
+}
+function drawTT() {
+  const s = tt.s, wk = s.week || {};
+  const today = new Date().toLocaleDateString("en-CA", { timeZone: TZ });
+  const docName = (sess.doctors.find(x => x.id === ttDoc()) || {}).name || "";
+  const leave = (s.leave || []).filter(l => (l.to || l.from) >= today);
+  const thisMonth = today.slice(0, 7), lastMonth = (() => { const d = new Date(today + "T12:00:00Z"); d.setUTCMonth(d.getUTCMonth() - 1); return d.toISOString().slice(0, 7); })();
+  $("tt").innerHTML = `
+    <div class="card"><h3>Working hours</h3>
+      ${DAYS.map(([k, n]) => `<div class="dayrow"><b>${n}</b><div class="wins">
+        ${(wk[k] || []).map((w, i) => `<div class="win"><input type="time" value="${w[0]}" data-d="${k}" data-i="${i}" data-e="0" aria-label="${n} from"><span>to</span><input type="time" value="${w[1]}" data-d="${k}" data-i="${i}" data-e="1" aria-label="${n} until"><button class="x" data-del="${k}:${i}" aria-label="Remove">✕</button></div>`).join("") || `<span class="closed">Closed</span>`}
+        <button class="add" data-add="${k}">+ Add hours</button></div></div>`).join("")}
+    </div>
+    <div class="card"><h3>Booking rules</h3><div class="grid2">
+      <label>Gap between patients (min)<input type="number" min="0" max="120" id="gap" value="${s.gap ?? 10}"></label>
+      <label>Earliest booking (hours from now)<input type="number" min="0" max="168" id="notice" value="${s.notice ?? 3}"></label>
+      <label>Book up to (days ahead)<input type="number" min="1" max="180" id="ahead" value="${s.ahead ?? 30}"></label>
+      <label>Max patients a day (0 = no limit)<input type="number" min="0" max="200" id="maxPerDay" value="${s.maxPerDay ?? 0}"></label>
+    </div></div>
+    <div class="card"><h3>Leave / days off</h3>
+      ${leave.length ? leave.map(l => `<div class="leave"><span><b>${esc(l.from === l.to ? fmtD(l.from) : fmtD(l.from) + " – " + fmtD(l.to))}</b>${l.note ? " · " + esc(l.note) : ""}</span><button class="x" data-lv="${esc(l.from)}|${esc(l.to)}">✕</button></div>`).join("") : `<p class="note">No leave added.</p>`}
+      <div class="grid2" style="margin-top:10px"><label>From<input type="date" id="lf" min="${today}"></label><label>To (optional)<input type="date" id="lt" min="${today}"></label></div>
+      <label class="note" style="display:grid;gap:4px;margin-top:8px">Note (only you see it)<input type="text" id="ln" maxlength="80" placeholder="e.g. Conference"></label>
+      <button class="btn ghost" id="addLeave" style="margin-top:10px">Add leave</button>
+      <p class="note" style="margin-top:8px">Bookings already made on these days stay — cancel them from Upcoming if needed.</p>
+    </div>
+    <div class="card"><h3>Download bookings</h3><p class="note">A list of ${isDesk() ? esc(docName) + "'s" : "your patients'"} bookings for the month (opens in Excel). Keep it as your record — old bookings are removed from DotCom automatically after a year.</p>
+      <div class="acts"><button class="btn ghost" data-exp="${lastMonth}">${monthName(lastMonth)}</button><button class="btn ghost" data-exp="${thisMonth}">${monthName(thisMonth)}</button></div></div>
+    <button class="btn full save" id="saveTT">Save timetable</button>`;
+  const box = $("tt");
+  box.querySelectorAll("input[type=time]").forEach(i => i.onchange = () => { wk[i.dataset.d][+i.dataset.i][+i.dataset.e] = i.value; });
+  box.querySelectorAll("[data-del]").forEach(b => b.onclick = () => { const [d, i] = b.dataset.del.split(":"); wk[d].splice(+i, 1); drawTT(); });
+  box.querySelectorAll("[data-add]").forEach(b => b.onclick = () => { const d = b.dataset.add; (wk[d] = wk[d] || []).push((wk[d] || []).length ? ["17:00", "20:00"] : ["10:00", "13:00"]); drawTT(); });
+  box.querySelectorAll("[data-lv]").forEach(b => b.onclick = () => { const [f, t] = b.dataset.lv.split("|"); s.leave = (s.leave || []).filter(l => !(l.from === f && (l.to || l.from) === t)); drawTT(); });
+  box.querySelectorAll("[data-exp]").forEach(b => b.onclick = () => exportMonth(b.dataset.exp, b));
+  $("addLeave").onclick = () => {
+    const f = $("lf").value, t = $("lt").value || f;
+    if (!f) return toast("Choose the first day of leave.");
+    if (t < f) return toast("The last day can't be before the first.");
+    (s.leave = s.leave || []).push({ from: f, to: t, note: $("ln").value.trim() }); drawTT(); toast("Added — tap Save timetable.");
+  };
+  $("saveTT").onclick = async () => {
+    for (const [k, n] of DAYS) for (const w of wk[k] || []) if (!w[0] || !w[1] || w[0] >= w[1]) return toast(`${n}: the end time must be after the start time.`);
+    const btn = $("saveTT"); btn.disabled = true; btn.textContent = "Saving…";
+    try {
+      const body = { week: wk, leave: s.leave || [], gap: +$("gap").value, notice: +$("notice").value, ahead: +$("ahead").value, maxPerDay: +$("maxPerDay").value };
+      tt.s = (await post("/schedule", { doctor: ttDoc(), schedule: body })).schedule; drawTT(); toast("Timetable saved. Patients see the new times now.");
+    } catch (e) { toast(e.message); btn.disabled = false; btn.textContent = "Save timetable"; }
+  };
+}
+const fmtD = d => new Date(d + "T12:00:00Z").toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+const monthName = m => new Date(m + "-15T12:00:00Z").toLocaleDateString("en-IN", { month: "long", year: "numeric" });
+async function exportMonth(m, btn) {
+  btn.disabled = true;
+  try {
+    const res = await fetch(API + "/export?month=" + m + "&doctor=" + encodeURIComponent(ttDoc()), { headers: { Authorization: "Bearer " + sess.token } });
+    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || "Could not download.");
+    const url = URL.createObjectURL(await res.blob()); const a = document.createElement("a");
+    a.href = url; a.download = `${((sess.doctors.find(x => x.id === ttDoc()) || {}).name || "doctor").replace(/[^\w]+/g, "-")}-bookings-${m}.csv`; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 5000);
+  } catch (e) { toast(e.message); }
+  btn.disabled = false;
+}
+
+/* ---------- leave / holiday (Cal.com) ---------- */
+let leave = { doc: "", items: null, err: "" };
+function leaveDoc() { return isDesk() ? (filter !== "all" ? filter : (leave.doc || sess.doctors[0].id)) : sess.role; }
+function leaveView() {
+  const doc = leaveDoc(), today = new Date().toISOString().slice(0, 10);
+  return `<div class="panel"><h3>Leave / holiday</h3><p class="note">Chosen days disappear from booking. Bookings already made stay; decline them if needed.</p>
+    <div class="row" style="margin-top:12px">${isDesk() ? `<label>Doctor<select id="lvDoc">${sess.doctors.map(d => `<option value="${esc(d.id)}" ${d.id === doc ? "selected" : ""}>${esc(d.name)}</option>`).join("")}</select></label>` : ""}
+      <label>From<input type="date" id="lvFrom" min="${today}" value="${today}"></label><label>To<input type="date" id="lvTo" min="${today}" value="${today}"></label>
+      <button class="btn" id="lvAdd">Add leave</button></div>
+    <div id="lvList" style="margin-top:14px">${leave.items === null ? `<p class="note">Loading…</p>` : leave.err ? `<p class="err">${esc(leave.err)}</p>` : leave.items.length ? `<table><tr><th>From</th><th>To</th><th></th></tr>${leave.items.map(x => `<tr><td>${esc(day(x.start))}</td><td>${esc(day(x.end))}</td><td style="text-align:right"><button class="btn ghost sm" data-lvdel="${x.id}">Remove</button></td></tr>`).join("")}</table>` : `<p class="note">No leave planned.</p>`}</div></div>`;
+}
+async function loadLeave() {
+  leave.items = null; leave.err = "";
+  try { leave.items = (await api("/leave?doctor=" + encodeURIComponent(leaveDoc()))).items; } catch (e) { leave.err = e.message; leave.items = []; }
+  if (tab === "leave") render();
+}
+function wireLeave() {
+  if ($("lvDoc")) $("lvDoc").onchange = e => { leave.doc = e.target.value; loadLeave(); };
+  $("lvAdd").onclick = async () => {
+    $("lvAdd").disabled = true;
+    try { await post("/leave", { doctor: leaveDoc(), start: $("lvFrom").value, end: $("lvTo").value }); toast("Leave added. Those days are closed for booking."); loadLeave(); }
+    catch (e) { toast(e.message); $("lvAdd").disabled = false; }
+  };
+  document.querySelectorAll("[data-lvdel]").forEach(b => b.onclick = async () => {
+    b.disabled = true;
+    try { await post("/leave-delete", { doctor: leaveDoc(), id: b.dataset.lvdel }); toast("Leave removed."); loadLeave(); }
+    catch (e) { toast(e.message); b.disabled = false; }
+  });
+}
+
+/* ---------- monthly report (PDF) ---------- */
+let rep = { month: new Date().toISOString().slice(0, 7), data: null, err: "" };
+const money = n => "Rs " + Number(n || 0).toLocaleString("en-IN");
+function reportView() {
+  const R = rep.data, t = R && R.total;
+  return `<div class="panel"><h3>Monthly report</h3>
+    <div class="row">${isDesk() ? `<label>Doctor<select id="rpDoc"><option value="all">All doctors</option>${sess.doctors.map(d => `<option value="${esc(d.id)}" ${filter === d.id ? "selected" : ""}>${esc(d.name)}</option>`).join("")}</select></label>` : ""}
+      <label>Month<input type="month" id="rpMonth" value="${rep.month}"></label><button class="btn" id="rpGo">Show</button><button class="btn ghost" id="rpPdf" ${R ? "" : "disabled"}>Download PDF</button></div>
+    ${rep.err ? `<p class="err">${esc(rep.err)}</p>` : ""}
+    ${t ? `<div class="stats">${[["Consultations done", t.done], ["Income", money(t.income)], ["New patients", t.newP], ["Review patients", t.reviewP], ["Cancelled", t.cancelled], ["Declined", t.declined], ["No-shows", t.noShow], ["Still upcoming", t.upcoming]].map(([a, b]) => `<div class="stat"><b>${esc(b)}</b><span>${esc(a)}</span></div>`).join("")}</div>
+      ${R.doctors.length > 1 ? `<table><tr><th>Doctor</th><th>Done</th><th>Income</th><th>No-shows</th></tr>${R.doctors.map(d => `<tr><td>${esc(d.name)}</td><td>${d.done}</td><td>${money(d.income)}</td><td>${d.noShow}</td></tr>`).join("")}</table>` : ""}
+      <table><tr><th>Consultation type</th><th>Done</th></tr>${Object.entries(t.byType).map(([k, v]) => `<tr><td>${esc(k)}</td><td>${v}</td></tr>`).join("") || `<tr><td colspan="2">None yet</td></tr>`}</table>
+      <p class="note" style="margin-top:10px">Busiest day: <b>${esc(busiestDay(t))}</b> · Busiest time: <b>${esc(busiestHour(t))}</b></p>` : (R === null && !rep.err ? `<p class="note" style="margin-top:12px">Choose a month and tap Show.</p>` : "")}</div>`;
+}
+const busiestDay = t => { const e = Object.entries(t.byDay).sort((a, b) => b[1] - a[1])[0]; return e && e[1] ? e[0] : "—"; };
+const hourLabel = h => { const a = +h % 12 || 12; return `${a} ${+h < 12 ? "am" : "pm"}`; };
+const busiestHour = t => { const e = Object.entries(t.byHour).sort((a, b) => b[1] - a[1])[0]; return e ? `${hourLabel(e[0])}–${hourLabel((+e[0] + 1) % 24)}` : "—"; };
+function wireReport() {
+  $("rpGo").onclick = async () => {
+    rep.month = $("rpMonth").value || rep.month; const doc = $("rpDoc") ? $("rpDoc").value : "";
+    $("rpGo").disabled = true; rep.err = "";
+    try { rep.data = await api(`/report?month=${rep.month}${doc ? "&doctor=" + encodeURIComponent(doc) : ""}`); } catch (e) { rep.err = e.message; rep.data = null; }
+    render();
+  };
+  $("rpPdf").onclick = () => pdf(rep.data);
+}
+function pdf(R) {
+  if (!R || !window.jspdf) return toast("PDF maker not loaded. Check your internet and try again.");
+  const { jsPDF } = window.jspdf; const doc = new jsPDF({ unit: "mm", format: "a4" });
+  const deep = S.theme.brandDeep, W = 210; let y = 0;
+  const hexRGB = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+  doc.setFillColor(...hexRGB(deep)); doc.rect(0, 0, W, 34, "F");
+  doc.setTextColor(255, 255, 255); doc.setFont("helvetica", "bold"); doc.setFontSize(18); doc.text(CL.name || S.doctor.name, 14, 15);
+  doc.setFont("helvetica", "normal"); doc.setFontSize(11);
+  const [yy, mm] = R.month.split("-"); const mName = new Date(Date.UTC(+yy, +mm - 1, 1)).toLocaleDateString("en-IN", { month: "long", year: "numeric", timeZone: "UTC" });
+  doc.text(`Monthly report · ${mName}${R.doctors.length === 1 ? " · " + R.doctors[0].name : ""}`, 14, 24);
+  y = 46; doc.setTextColor(30, 50, 57);
+  const t = R.total;
+  const tiles = [["Consultations done", String(t.done)], ["Income from fees", money(t.income)], ["New patients", String(t.newP)], ["Review patients", String(t.reviewP)], ["Cancelled", String(t.cancelled)], ["Declined", String(t.declined)], ["No-shows", String(t.noShow)], ["Still upcoming", String(t.upcoming)]];
+  tiles.forEach((tl, i) => {
+    const x = 14 + (i % 4) * 46, yy2 = y + Math.floor(i / 4) * 24;
+    doc.setFillColor(243, 247, 248); doc.roundedRect(x, yy2, 43, 20, 3, 3, "F");
+    doc.setFont("helvetica", "bold"); doc.setFontSize(14); doc.text(tl[1], x + 4, yy2 + 9);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(8.5); doc.setTextColor(93, 114, 122); doc.text(tl[0], x + 4, yy2 + 16); doc.setTextColor(30, 50, 57);
+  });
+  y += 56;
+  const table = (title, head, rows) => {
+    if (y > 250) { doc.addPage(); y = 20; }
+    doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.text(title, 14, y); y += 6;
+    doc.setFontSize(9.5); doc.setTextColor(93, 114, 122); head.forEach((h, i) => doc.text(h, 14 + i * 45, y)); doc.setTextColor(30, 50, 57); y += 2;
+    doc.setDrawColor(225, 234, 236); doc.line(14, y, W - 14, y); y += 5; doc.setFont("helvetica", "normal");
+    (rows.length ? rows : [["None"]]).forEach(rw => { if (y > 280) { doc.addPage(); y = 20; } rw.forEach((c, i) => doc.text(String(c), 14 + i * 45, y)); y += 6; });
+    y += 6;
+  };
+  if (R.doctors.length > 1) table("By doctor", ["Doctor", "Done", "Income", "No-shows"], R.doctors.map(d => [d.name, d.done, money(d.income), d.noShow]));
+  table("By consultation type", ["Type", "Done"], Object.entries(t.byType));
+  table("By day of the week", ["Day", "Consultations"], ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(d => [d, t.byDay[d] || 0]));
+  table("By time of day (IST)", ["Time", "Consultations"], Object.entries(t.byHour).sort((a, b) => a[0] - b[0]).map(([h, n]) => [`${hourLabel(h)}–${hourLabel((+h + 1) % 24)}`, n]));
+  doc.setFontSize(8); doc.setTextColor(120, 130, 135);
+  doc.text(`Generated ${new Date().toLocaleString("en-IN", { timeZone: TZ })} IST from the clinic's live booking calendar. No patient details are included.`, 14, 290);
+  doc.save(`${(CL.name || "clinic").replace(/[^A-Za-z0-9]+/g, "-")}-report-${R.month}.pdf`);
+}
+
+/* ---------- phone notifications (doctor / desk only) ---------- */
+const keyBytes = b => { b = b.replace(/-/g, "+").replace(/_/g, "/"); while (b.length % 4) b += "="; return Uint8Array.from(atob(b), c => c.charCodeAt(0)); };
+async function enablePush() {
+  try {
+    const perm = await Notification.requestPermission();
+    if (perm !== "granted") { toast("Notifications are blocked. Allow them in your browser settings."); return; }
+    const reg = await navigator.serviceWorker.ready;
+    const { key } = await api("/vapid");
+    if (!key) throw new Error("Notifications are not set up yet.");
+    let sub = await reg.pushManager.getSubscription();
+    if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: keyBytes(key) });
+    await post("/subscribe", { subscription: sub.toJSON() });
+    toast("Notifications are on for this phone."); render();
+  } catch (e) { toast(e.message || "Could not turn on notifications."); }
+}
+
+sess && sess.token ? afterLogin() : showLogin();
+})();
+</script>
+</body>
+</html>
