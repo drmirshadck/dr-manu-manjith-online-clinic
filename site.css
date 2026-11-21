@@ -68,7 +68,7 @@ h1 .serif{display:block;color:var(--cyan);font-size:1.08em;line-height:1.05;marg
 .award-card b{display:block;color:var(--navy);font-size:.95rem}.award-card small{font-size:.82rem}
 
 .hero-art{position:relative;padding:60px 0 50px 60px}
-.photo{border-radius:18px;overflow:hidden;background:#e8e4ee;aspect-ratio:4/5;max-width:470px;margin-left:auto}
+.photo{border-radius:18px;overflow:hidden;background:#1d3a52;aspect-ratio:4/5;max-width:470px;margin-left:auto}
 .photo img{width:100%;height:100%;object-fit:cover;object-position:center top}
 .float{position:absolute;background:#fff;border-radius:12px;box-shadow:var(--shadow);padding:16px 18px;z-index:2}
 .card-top{top:0;left:0;width:min(360px,80%)}
@@ -159,7 +159,7 @@ h1 .serif{display:block;color:var(--cyan);font-size:1.08em;line-height:1.05;marg
 /* about */
 .about-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:64px;align-items:center}
 .about-photo{position:relative}
-.about-photo img{border-radius:18px;aspect-ratio:4/4.3;height:auto;object-fit:cover;object-position:center 0;width:100%}
+.about-photo img{border-radius:18px;aspect-ratio:4/4.3;height:auto;object-fit:cover;object-position:center 15%;width:100%}
 .about-photo .tag{position:absolute;left:18px;bottom:18px;right:18px;background:#fff;border-radius:12px;padding:14px 18px;color:var(--navy);font-family:var(--serif);font-size:1.15rem;box-shadow:var(--shadow)}
 .about p+p{margin-top:16px}
 .about h2{margin-bottom:22px}
