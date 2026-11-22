@@ -11,7 +11,7 @@ window.SITE = {
     shortName: "Dr. Manu",
     photo: "doctor.jpg",
     eyebrow: "Homoeopathic Psychiatry · Counselling",
-    role: "Homoeopathic Physician · Psychiatry & Counselling",   // PREVIEW: confirm exact qualifications
+    role: "BHMS, MD (Psychiatry) · Physician · Psychiatrist",
     lead: "Private counselling and homoeopathic care by video, with the doctor Malayalam cinema knows as the Doctor Lyricist."
   },
 
@@ -39,7 +39,7 @@ window.SITE = {
       id: "anu",                                   // PREVIEW: test helper id; becomes "manu" on the official helper
       name: "Dr. Manu Manjith",
       photo: "doctor.jpg",
-      title: "Homoeopathic Physician · Psychiatry & Counselling",
+      title: "BHMS, MD (Psychiatry) · Physician · Psychiatrist",
       bio: "Counselling-led homoeopathic care. Unhurried, private and judgement-free.",
       languages: "Malayalam, English",
       roomUrl: "",

@@ -186,8 +186,8 @@ function scenes() {
 /* ---------- in-view classes for small animations ---------- */
 if ("IntersectionObserver" in window) {
   const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: .35 });
-  $$(".feat, .ring-card, .mini").forEach(el => io.observe(el));
-} else $$(".feat, .ring-card, .mini").forEach(el => el.classList.add("in"));
+  $$(".feat, .ring-card, .mini, .areas").forEach(el => io.observe(el));
+} else $$(".feat, .ring-card, .mini, .areas").forEach(el => el.classList.add("in"));
 
 /* ---------- main loop ---------- */
 function resize() { initStars(); initOrb(); [WW, WH] = fit(waveCv); scenes(); }
