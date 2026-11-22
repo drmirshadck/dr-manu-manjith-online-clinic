@@ -18,7 +18,7 @@ window.SITE = {
   brand: { title: "Dr Manu Manjith", subtitle: "Counselling & Homoeopathy" },
 
   theme: {
-    brand: "#5b3df5",       // violet (buttons inside booking)
+    brand: "#6b3fd6",       // violet (buttons inside booking)
     brandDeep: "#00006e",   // navy (Bridgement)
     accent: "#d20c54",      // pink call-to-action
     light: "#00c3f0"        // cyan highlight
